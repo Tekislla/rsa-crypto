@@ -20,7 +20,7 @@ Coloquei os nomes das classes/métodos/variáveis em inglês, pois acredito ser 
 Organizei cada código deixando a lógica na função principal (main), dentro de uma classe com o nome da aplicação, para compilar cada programa separadamente. Também comentei cada parte da lógica dentro dos códigos, para fins didáticos e para facilitar o entendimento do código para alguém que não conhece as funções/métodos/lógica utilizados para criar as aplicações.
 Utilizei a linguagem Java, pois é a linguagem a qual eu trabalho há 2 anos, o que me dá uma base sólida para trabalhar com a mesma e gerar os algoritmos com mais facilidade.
 As classes Encrypt e Decrypt possuem uma lógica parecida, porém reversa, mas o modo de escrever é bem parecido. Encontrei dois modos de escrever o código, e escrevi cada um deles de um modo diferente.
-A parte que mais encontrei dificuldades foi onde eu fiz o algoritmo para gerar as chaves, pois não tinha trabalhado muito com as interfaces RSA, o que demandou um pouco mais de pesquisa para desenvolver.
+A parte que mais encontrei dificuldades foi onde eu fiz o algoritmo para gerar as chaves, que demandou um pouco mais de pesquisa para desenvolver.
 
 2. Teste: fiz um arquivo .bat para testar as aplicações através do cmd, o que me poupou muito tempo o qual eu perderia escrevendo as linhas para executar cada passo. Primeiro gerei as chaves, depois criei um arquivo de input com o texto `hello world` e testei criptografar e descriptografar o mesmo, e deu certo.
 Acabei me deparando com algumas Exceptions na hora de criptografar, pois no início eu estava gerando as chaves de forma errada, o que acabou consumindo boa parte do meu tempo até eu conseguir corrigir o arquivo de gerar as chaves.
