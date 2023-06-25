@@ -1,65 +1,65 @@
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.SecureRandom;
 
 public class RSAKeyGenerator {
     public static void main(String[] args) {
-        try {
-            // Gerando par de chaves RSA
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            // Definindo o tamanho da chave em 2048 bits
-            keyPairGenerator.initialize(2048);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        // Definindo o tamanho do número primo p
+        int keySize = 1024;
 
-            // Pegando a chave pública
-            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-            BigInteger publicKeyModulus = publicKey.getModulus();
-            BigInteger publicKeyExponent = publicKey.getPublicExponent();
+        // Gerando os números primos p e q
+        BigInteger p = generatePrimeNumber(keySize);
+        BigInteger q = generatePrimeNumber(keySize);
 
-            // Pegando a chave privada
-            PrivateKey privateKey = keyPair.getPrivate();
-            BigInteger privateKeyModulus = ((RSAPrivateKey) privateKey).getModulus();
-            BigInteger privateKeyExponent = ((RSAPrivateKey) privateKey).getPrivateExponent();
+        // Calculando o módulo n
+        BigInteger n = p.multiply(q);
 
-            // Salvando a chave pública em um arquivo
-            // Salvando módulo na primeira linha
-            saveKeyToFile(publicKeyModulus, "public_key.txt");
-            // Salvando expoente na segunda linha
-            saveKeyToFile(publicKeyExponent, "public_key.txt", true);
+        // Calculando a função totiente de Euler
+        BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 
-            // Salvando a chave privada em um arquivo
-            // Salvando módulo na primeira linha
-            saveKeyToFile(privateKeyModulus, "private_key.txt");
-            // Salvando expoente na segunda linha
-            saveKeyToFile(privateKeyExponent, "private_key.txt", true);
+        // Gerando o expoente de criptografia e
+        BigInteger e = generateEncryptionExponent(phi);
 
-            // Feedback para o usuário
-            System.out.println("As chaves foram geradas.");
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // Tratando possíveis exceptions com try/catch ao invés de declará-las na definição da função
-            System.out.println("Erro ao gerar as chaves.\n");
-            e.printStackTrace();
+        // Calculando o expoente de descriptografia d
+        BigInteger d = e.modInverse(phi);
+
+        // Escrevendo as chaves no arquivo
+        writeKeysToFile(n, e, d);
+    }
+
+    // Função para gerar um número primo sem precisar duplicar o código
+    private static BigInteger generatePrimeNumber(int bitLength) {
+        SecureRandom random = new SecureRandom();
+        return BigInteger.probablePrime(bitLength, random);
+    }
+
+    // Função para gerar o expoente de criptografia
+    private static BigInteger generateEncryptionExponent(BigInteger phi) {
+        BigInteger e = BigInteger.valueOf(65537);
+        while (e.gcd(phi).compareTo(BigInteger.ONE) != 0 && e.compareTo(phi) < 0) {
+            e = e.add(BigInteger.ONE);
         }
+        return e;
     }
 
-    // Polimorfismo: alterando a chamada da função saveKeyToFile para chamar a função principal com o parâmetro append pré-definido como false
-    private static void saveKeyToFile(BigInteger key, String filename) throws IOException {
-        saveKeyToFile(key, filename, false);
-    }
+    // Função para escrever as chaves nos arquivo
+    private static void writeKeysToFile(BigInteger n, BigInteger e, BigInteger d) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("public_key.txt"))) {
+            writer.write(n.toString());
+            writer.newLine();
+            writer.write(e.toString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
-    // Função para salvar a chave no arquivo
-    private static void saveKeyToFile(BigInteger key, String filename, boolean append) throws IOException {
-        String keyString = key.toString();
-
-        FileWriter writer = new FileWriter(filename, append);
-        writer.write(keyString);
-        writer.write(System.lineSeparator());
-        writer.close();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("private_key.txt"))) {
+            writer.write(n.toString());
+            writer.newLine();
+            writer.write(d.toString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
